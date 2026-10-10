@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Word Salad</title>
+<meta name="description" content="Draw a handful of random words, set a timer, and write something with them.">
+<meta name="theme-color" content="#b9d6e8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='10' width='56' height='44' rx='6' fill='%23ffd93d' stroke='%23e8257f' stroke-width='5'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Arial,sans-serif' font-weight='700' font-size='28' fill='%23e8257f'%3EWS%3C/text%3E%3C/svg%3E">
+<link rel="canonical" href="https://jon-hanover.github.io/wordsalad/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Word Salad">
+<meta property="og:description" content="Draw a handful of random words, set a timer, and write something with them.">
+<meta property="og:url" content="https://jon-hanover.github.io/wordsalad/">
+<meta property="og:image" content="https://jon-hanover.github.io/wordsalad/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Libre+Caslon+Text:wght@400&family=Figtree:wght@500;600;700&display=swap">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+</head>
+<body>
+<style>
+/* Layout: a full-bleed close-up of an ice-blue enamel fridge door. Magnets only:
+   the red YAY! title magnet, charcoal control magnets, magnetic-poetry word strips, and a charcoal timer magnet.
+   Deliberately a single look in both themes: the fridge is always ice blue. */
+:root {
+  --enamel: #b9d6e8;
+  --enamel-deep: #8fb6cf;
+  --cast: rgba(28, 62, 86, 0.30);
+  --cast-soft: rgba(28, 62, 86, 0.16);
+  --yay: #ffd93d;
+  --yay-edge: #c49a0c;
+  --yay-rim: #e8257f;
+  /* Timer magnet: glossy lime enamel */
+  --char-hi: #cbe76f;
+  --char: #add24a;
+  --char-lo: #79992a;
+  --char-edge: #5f7c1c;
+  --char-key: #c4e262;
+  --char-key-hi: #e0f39f;
+  --char-ink: #1f3812;
+  --char-dim: #f2f9dc;
+  --link: #2b5270;
+  --paper: #ffffff;
+  --paper-ink: #1a1a1a;
+  --alarm: #b8261a;
+  --font-badge: "Montserrat", "Futura", "Avenir Next", system-ui, sans-serif;
+  --chrome: linear-gradient(180deg, #b8c0c6 0%, #8a959d 18%, #c3cbd0 31%, #525d66 50%, #85909a 62%, #b6bfc5 77%, #68737c 100%);
+  --font-poetry: "Libre Caslon Text", "Times New Roman", Times, Georgia, serif;
+  --font-ui: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { height: 100%; background: var(--enamel); }
+body {
+  min-height: 100%;
+  color: var(--paper-ink);
+  font-family: var(--font-ui);
+  background:
+    radial-gradient(130% 75% at 15% 0%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(104deg, rgba(255,255,255,0) 32%, rgba(255,255,255,0.20) 46%, rgba(255,255,255,0) 58%),
+    radial-gradient(110% 70% at 90% 105%, rgba(60, 105, 135, 0.28), rgba(60, 105, 135, 0) 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.2 0 0 0 0 0.3 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    var(--enamel);
+}
+
+.door {
+  max-width: 1000px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding-inline: 28px;
+  padding-block: 36px 40px;
+  display: grid;
+  align-content: center;
+  gap: 26px;
+}
+
+/* ---------- YAY! title magnet ---------- */
+.yay {
+  justify-self: center;
+  width: min(100%, 640px);
+  margin: 0;
+  padding: 22px 30px;
+  border-radius: 7px;
+  color: var(--yay-rim);
+  background:
+    linear-gradient(168deg, rgba(255,255,255,0.20), rgba(255,255,255,0) 38%),
+    var(--yay);
+  box-shadow:
+    inset 0 0 0 6px var(--yay),
+    inset 0 0 0 10px var(--yay-rim),
+    0 0 0 1px var(--yay-edge),
+    1px 2px 0 1px var(--yay-edge),
+    3px 6px 7px var(--cast),
+    12px 22px 34px var(--cast-soft);
+  transform: rotate(-1deg);
+}
+.yay svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* ---------- Chrome lettering set onto the door ---------- */
+.controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 64px; }
+.chrome {
+  font-family: var(--font-badge);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  background: var(--chrome);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.8)) drop-shadow(0 2px 1.5px rgba(22, 52, 74, 0.55));
+}
+button.chrome {
+  border: 0; padding: 8px 6px; cursor: pointer; line-height: 1;
+  transition: transform 100ms ease, filter 100ms ease;
+}
+button.chrome:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.12) drop-shadow(0 1px 0 rgba(255,255,255,0.8)) drop-shadow(0 3px 2px rgba(22, 52, 74, 0.45));
+}
+button.chrome:active:not(:disabled) { transform: translateY(1px); }
+button.chrome:disabled { opacity: 0.35; cursor: default; }
+button.chrome:focus-visible { outline: 2px solid #4f6472; outline-offset: 3px; border-radius: 6px; }
+.count { display: inline-flex; align-items: center; gap: 10px; }
+.count .key { font-size: 2.5rem; font-weight: 600; letter-spacing: 0; padding: 4px 10px; }
+.count .num { font-size: 2.5rem; letter-spacing: 0.06em; min-width: 2.2ch; text-align: center; font-variant-numeric: tabular-nums; }
+.count .unit { font-size: 1.4rem; margin-right: -0.3em; }
+.refresh {
+  border: 0; background: none; padding: 6px; cursor: pointer; line-height: 0; border-radius: 50%;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.8)) drop-shadow(0 2px 1.5px rgba(22, 52, 74, 0.55));
+}
+.refresh svg { width: 54px; height: 54px; display: block; transition: transform 300ms ease; }
+.refresh:hover svg { transform: rotate(35deg); }
+.refresh.spin svg { animation: spin 550ms cubic-bezier(.3,.7,.3,1); }
+@keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+.refresh:focus-visible { outline: 2px solid #4f6472; outline-offset: 3px; }
+
+/* ---------- Timer magnet body ---------- */
+.mag {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--char-ink);
+  background: linear-gradient(180deg, var(--char-hi), var(--char) 55%, var(--char-lo));
+  border: 0;
+  border-radius: 9px;
+  padding: 13px 20px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    0 1px 0 var(--char-lo),
+    0 2px 0 var(--char-lo),
+    2px 5px 6px var(--cast),
+    9px 16px 26px var(--cast-soft);
+}
+.timer button:focus-visible { outline: 3px solid var(--char-ink); outline-offset: 2px; }
+
+/* Board: the word strips plus a quiet copy link under them */
+.board { display: grid; align-content: center; justify-items: center; gap: 14px; }
+.copy-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: 600 0.85rem var(--font-ui);
+  color: var(--link);
+  background: none; border: 0; padding: 6px 8px; cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(43, 82, 112, 0.35);
+  text-underline-offset: 4px;
+  opacity: 0.85;
+}
+.copy-link:hover { opacity: 1; text-decoration-color: currentColor; }
+.copy-link svg { width: 14px; height: 14px; flex: none; }
+.copy-link:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- Magnetic poetry strips ---------- */
+.tiles {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 18px 14px;
+  justify-content: center; align-content: center; align-items: center;
+  min-height: 0;
+}
+.tile {
+  --r: 0deg;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(180deg, #ffffff, #f6f6f3);
+  color: var(--paper-ink);
+  font-family: var(--font-poetry);
+  font-size: 1.35rem;
+  line-height: 1.1;
+  padding: 6px 12px 5px;
+  border-radius: 1px;
+  box-shadow:
+    0 0 0 0.5px rgba(0,0,0,0.12),
+    0 1px 0 #d9dcdc,
+    1px 3px 3px var(--cast),
+    4px 9px 14px var(--cast-soft);
+  transform: rotate(var(--r));
+  animation: stick 340ms cubic-bezier(.2,.9,.3,1.2) both;
+  animation-delay: calc(var(--i) * 35ms);
+}
+.tile .swatch {
+  width: 16px; height: 22px; flex: none; border-radius: 1px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.14);
+}
+@keyframes stick {
+  from { opacity: 0; transform: translateY(-10px) scale(1.04) rotate(var(--r)); }
+  to { opacity: 1; transform: rotate(var(--r)); }
+}
+
+/* ---------- Timer magnet ---------- */
+.timer {
+  justify-self: center;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 16px 26px;
+  padding: 18px 22px;
+  border-radius: 14px;
+  cursor: default;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    inset 0 -2px 0 rgba(0,0,0,0.12),
+    0 1px 0 var(--char-lo),
+    0 2px 0 var(--char-lo),
+    0 4px 0 var(--char-edge),
+    3px 9px 10px var(--cast),
+    16px 30px 44px var(--cast-soft);
+}
+.time {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  text-transform: none;
+  min-width: 4.4ch;
+  text-align: center;
+  color: var(--char-ink);
+}
+.time.done { color: var(--alarm); animation: blink 0.5s steps(1) 6; }
+@keyframes blink { 50% { opacity: 0.2; } }
+.timer-side { display: grid; gap: 12px; }
+.seg { display: flex; gap: 4px; padding: 3px; border-radius: 8px; background: var(--char-lo); box-shadow: inset 0 1px 2px rgba(40,60,10,0.35); }
+.seg button {
+  font: 600 0.8rem var(--font-ui); letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--char-dim); background: transparent; border: 0; border-radius: 6px;
+  padding: 7px 12px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--char-ink); color: var(--char-key-hi); }
+.acts { display: flex; gap: 8px; }
+.acts button {
+  flex: 1;
+  font: 700 0.82rem var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--char-ink); border: 0; border-radius: 7px; padding: 9px 14px; cursor: pointer;
+  background: linear-gradient(180deg, var(--char-key-hi), var(--char-key));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 1px 0 var(--char-lo);
+}
+.acts button:active { transform: translateY(1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
+
+@media (max-width: 600px) {
+  .door { padding-inline: 16px; padding-block: 22px 26px; gap: 18px; }
+  .yay { padding: 16px 18px; }
+  .count .num, .count .key { font-size: 2.2rem; }
+  .controls { gap: 10px 44px; }
+  .refresh svg { width: 48px; height: 48px; }
+  .tiles { gap: 12px 10px; }
+  .tile { font-size: 1.15rem; }
+  .timer { flex-wrap: nowrap; gap: 14px; padding: 14px; }
+  .time { font-size: 2.3rem; min-width: 0; }
+  .seg button { padding: 6px 8px; font-size: 0.72rem; }
+  .acts button { padding: 8px 10px; font-size: 0.76rem; }
+}
+@media (max-width: 360px) {
+  .timer { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile, .time.done, .refresh.spin svg { animation: none; }
+  .refresh svg { transition: none; }
+  button.mag { transition: none; }
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+
+<main class="door">
+  <h1 class="yay">
+    <svg viewBox="-12 -12 606 88" role="img" aria-labelledby="yayTitle">
+      <title id="yayTitle">Yay! Word Salad!</title>
+      <defs>
+        <filter id="handwobble" filterUnits="userSpaceOnUse" x="-30" y="-30" width="660" height="130">
+          <feTurbulence type="fractalNoise" baseFrequency="0.016 0.026" numOctaves="1" seed="11" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <g id="yayLetters">
+          <path transform="translate(0 0) rotate(-2 16 30)" d="M1 2 Q9 15 16 29 Q23 14 31 0 M16 29 Q15 45 15.5 60"/>
+          <path transform="translate(43 0) rotate(1.5 15 30)" d="M0 60 Q8 30 15 1 Q23 31 30 60 M6.5 39 Q15 37.5 24 38"/>
+          <path transform="translate(84 0) rotate(2 16 30)" d="M0 1 Q8 15 16 28 Q24 16 32 2 M16 28 Q17 44 16.5 60"/>
+          <path transform="translate(127 0) rotate(3 6 30)" d="M6 0 Q5.5 20 6.5 39"/>
+          <path transform="translate(173 0) rotate(-1.5 20 30)" d="M0 1 Q4 30 9 60 Q14 38 20 17 Q25 39 31 60 Q36 30 40 0"/>
+          <path transform="translate(224 0) rotate(2 16 30)" d="M16.5 0 C27 0 33 12 33 30 C33 48 26.5 60 16 60 C5.5 60 0 47 0 30 C0 12.5 6 0 16.5 0 Z"/>
+          <path transform="translate(268 0) rotate(-1 14 30)" d="M0 60 Q1 30 0 0 L13 0 C23.5 0 28 6 28 15 C28 24.5 22 30 12 30 L0 30 M11 30 Q20 44 28 60"/>
+          <path transform="translate(307 0) rotate(1.5 15 30)" d="M0 0 Q-1 30 0 60 L9 60 C23.5 60 30 48 30 30 C30 12 23.5 0 9 0 Z"/>
+          <path transform="translate(371 0) rotate(-2 15 30)" d="M27 7 C23.5 2 19 0 14 0 C6 0 1.5 5.5 1.5 14 C1.5 23 8 26 15 29 C23 32 29 36.5 29 45.5 C29 55 22.5 60 14 60 C8.5 60 3 57.5 0 53"/>
+          <path transform="translate(411 0) rotate(-1 15 30)" d="M0 60 Q7 31 15.5 0 Q22 30 30 60 M6 38 Q15 39.5 24.5 39"/>
+          <path transform="translate(452 0) rotate(2 12 30)" d="M0 0 Q-1 30 0.5 60 Q12 60.5 24 59"/>
+          <path transform="translate(487 0) rotate(1 15 30)" d="M0 60 Q8 30 14.5 1 Q23 30 30 60 M7 39 Q15 37 24 38"/>
+          <path transform="translate(528 0) rotate(-1.5 15 30)" d="M0 0 Q1 30 0 60 L9 60 C23.5 60 30 48 30 30 C30 12 23.5 0 9 0 Z"/>
+          <path transform="translate(569 0) rotate(-3 6 30)" d="M6 0 Q7 20 5.5 39"/>
+        </g>
+      </defs>
+      <g filter="url(#handwobble)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <use href="#yayLetters" stroke-width="8.2"/>
+        <use href="#yayLetters" stroke-width="10" stroke-dasharray="17 13 8 19 24 11" stroke-dashoffset="6"/>
+        <use href="#yayLetters" stroke-width="9.1" stroke-dasharray="5 23 12 9" stroke-dashoffset="17"/>
+        <path d="M133.5 56.5 l0.6 0.4 M574.8 56.8 l-0.5 0.5" stroke-width="11"/>
+      </g>
+    </svg>
+  </h1>
+
+  <div class="controls">
+    <div class="count" role="group" aria-label="How many words">
+      <button class="chrome key" id="minus" type="button" aria-label="Fewer words">&minus;</button>
+      <span class="chrome num" id="count" aria-live="polite">12</span>
+      <button class="chrome key" id="plus" type="button" aria-label="More words">+</button>
+    </div>
+    <button class="refresh" id="draw" type="button" aria-label="Draw new words" title="Draw new words">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <defs><linearGradient id="chromeIcon" gradientUnits="userSpaceOnUse" x1="0" y1="3" x2="0" y2="21">
+          <stop offset="0" stop-color="#b8c0c6"/><stop offset="0.18" stop-color="#8a959d"/><stop offset="0.31" stop-color="#c3cbd0"/>
+          <stop offset="0.5" stop-color="#525d66"/><stop offset="0.62" stop-color="#85909a"/><stop offset="0.77" stop-color="#b6bfc5"/><stop offset="1" stop-color="#68737c"/>
+        </linearGradient></defs>
+        <g fill="none" stroke="url(#chromeIcon)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/>
+          <path d="M19.6 3.8v4.6h-4.6"/>
+        </g>
+      </svg>
+    </button>
+  </div>
+
+  <div class="board">
+    <ul class="tiles" id="tiles" aria-label="Your words"></ul>
+    <button class="copy-link" id="copy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 3.5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span id="copyLabel">Copy words</span></button>
+  </div>
+
+  <section class="mag timer" aria-label="Writing timer">
+    <div class="time" id="clock" role="timer">5:00</div>
+    <div class="timer-side">
+      <div class="seg" role="group" aria-label="Sprint length" id="lengths"></div>
+      <div class="acts">
+        <button id="go" type="button">Start</button>
+        <button id="reset" type="button">Reset</button>
+      </div>
+    </div>
+  </section>
+  <textarea id="copyArea" class="sr" aria-hidden="true" tabindex="-1"></textarea>
+</main>
+
+<script>
+/* ================================================================
+   Word Salad engine (word bank, balance rules, generator).
+   Rules: 2 paint chips per set (1 under 10 words); no part of speech
+   fills more than half the set; no repeats. Edit the bank here.
+   ================================================================ */
+/* ================================================================
+   WORD BANK
+   Each family lists words by part of speech: noun, verb, adj, adv.
+   Underscores become spaces (luna_moth -> "luna moth").
+   Paint chips are "Name#hex" separated by "|".
+   ================================================================ */
+
+const PAINT_CHIPS = `
+Wet Slate#5f6b73|Hushed Lilac#c8b6d6|Buttered Toast#e3c088|Sea Glass#a9d1c7|Pale Oak#ddd1c0|Midnight Ink#1f2a44|Paprika Dust#b5502d|Morning Fog#cfd4d6|Rosewater#efc9c6|Faded Denim#7d93ad|Olive Grove#7a7a46|Saltwater Taffy#f4c2c9|Burnt Marmalade#c8641f|Lichen#a3ab8a|Oyster Shell#e2ddd2|Thundercloud#5a5e66|Peach Fuzz#ffbe98|Velvet Plum#5e2b4b|Wheat Field#e2c98f|Harbor Blue#3e6a87|Cinnamon Stick#9c5a33|Antique Lace#efe4cf|Pistachio Cream#cfe0b4|Smoked Pearl#b9b5ae|Dusty Miller#bcc1b6|Brick Dust#a5533f|Lemon Chiffon#fbf1b8|Deep Lagoon#1f5d63|Sandcastle#d9c29e|Fig Jam#6d3a4a|Moth Wing#c9bba6|Copper Kettle#b06c3b|Glacier Melt#cde3e8|Cocoa Bean#5b3a2e|Rain Barrel#8a9690|Marigold Glow#f2a922|Twilight Violet#5d4c7a|Mushroom Cap#a89a87|Iceberg Lettuce#d6e8c4|Tobacco Leaf#7d5a35|Ballet Slipper#f3d3d1|Storm Petrel#4b5560|Honeycomb#e0a83a|Sage Whisper#b7c2a5|Cranberry Bog#8c2b3a|Driftwood#9e8b76|Blue Heron#6f8aa0|Apricot Blush#f6b98e|Charcoal Sketch#3d3d3f|Linen Closet#ede6d8|Pine Needle#3f5b3d|Mermaid Tail#4c9a8f|Spiced Cider#b5652e|Fresh Snow#f6f7f5|Bruised Plum#4f2d45|Tea Stain#c9a77c|Cornflower#7b98d4|Clay Pot#b5673f|Mint Julep#c6e2c3|Graphite#55585c|Daffodil#f8d55b|Robin's Egg#9fd3d6|Mossy Stone#78806a|Cotton Candy#f7c6dc|Rust Belt#8e4a2a|Vanilla Bean#f1e6cc|Deep Sea Diver#26495c|Persimmon#e26a3c|Elephant Ear#9b9792|Butterscotch#d99b45|Wisteria#b6a1d1|Forest Floor#4e4a33|Cloud Nine#e9ecef|Salmon Run#e8907a|Inkwell#2b2f3a|Golden Hour#e8b65a|Seafoam#b9e1d3|Raisin#5a3b3e|Parchment#ead9b6|Frosted Sage#c4cfbd|Lava Rock#4a3f3c|Pink Grapefruit#f29e8e|Bluebell#7f8fc9|Toasted Almond#c79f74|Spanish Moss#9c9d7c|Mulberry#7a3e5e|Chalkboard#3b4440|Lemongrass#d5d38b|Coral Reef#f07e6e|Pewter Mug#8e9091|Wild Honey#d5932a|Harvest Moon#e6a157|Arctic Fox#eef1f2|Plum Brandy#6e3049|Beach Plum#8d5a74|Cucumber Water#dcebd6|Gingerbread#a5673b|Polar Night#22303d|Teal Feather#2f7f86|Sunday Paper#e8e4da|Cherry Cola#5e1f24|Cool Mint#bfe5d6|Weathered Barn#8a4b3c|Hazelnut#a77f5c|Lilac Haze#d4c4e3|Tidepool#4f8c8a|Saffron Thread#e8a33d|Dove Gray#b6b4b0|Blackberry Wine#4a2338|Oatmeal#ddd0b8|Ripe Mango#f7a541|Distant Thunder#6b7076|Peony Petal#f1b2c1|Avocado Toast#9da95e|Smoky Quartz#7d6d65|Seashell Pink#f6dcd2|Bayou Green#4f6250|Prairie Grass#bba878|Atlantic Gray#6a7a82|Molasses#4a2c1e|Tangerine Dream#f68b3a|Lavender Field#a79bc8|Old Penny#a0603c|Fiddlehead#86a05b|Starless Night#191c24|Caramel Swirl#c58a4c|Sky Blue Pink#d9c5d8|Kelp Forest#4b5a3a|Rhubarb Pie#b9475a|Hint of Pear#e6ecc1|Battleship#7a7f80|Sunflower#f4c430|Iris Bloom#5b4e9c|Pumpkin Spice#c26a2f|Snowdrop#f2f4ee|Jade Garden#5f9f80|Cafe au Lait#a67f5d|Grape Soda#6d3f8e|Dusty Rose#c9969a|Turmeric#d49b2a|Silver Lining#c7c9cc|Evergreen#2f4a3a|Clementine#f28b30|Bone China#f1ebdf|Ocean Liner#2c4c6b|Pomegranate#a3313b|Matcha Latte#b5c48a|Granite Peak#7c7e7f|Buttercup#f9d950|Midnight Garden#2e3b33|Rosehip#c4574f|Feather Gray#cfccc6|Juniper Berry#4a5e6d|Tomato Bisque#d9604a|Bamboo Shoot#c9c48f|Volcanic Ash#5c5a58|Melon Ball#f6b588|Tropical Lagoon#3fa9a3|Burgundy Velvet#6b1f2e|Hay Bale#d8bc72|Glass Slipper#d8e6ea|Chocolate Truffle#4c3a33|Firefly#e5e27a|Ink Blot#252a35|Peach Cobbler#f0a87b|Arrowroot#e8dfc8|Smoke Signal#9a9893|Bluebird#5c88c5|Sienna Earth#a0522d|Cream Soda#f4e3bc|Wild Plum#7f3f5a|Pebble Beach#b4ada2|Kiwi Slice#a8c256|Mink#8b766a|Tulip Red#c8323c|Lighthouse White#f5f3ee|Cobalt Dream#2f4fa2|Ochre#c58b2c|Lily Pad#7c9a5b|Desert Rose#c98f85|Shadow Box#4d4b4a|Pink Champagne#f3d2c5|Orchard Green#6e8b44|Fog Bank#bec2c2|Sweet Potato#d98a4b|Royal Velvet#3d2a6b|Almond Milk#efe5d2|Copper Penny#ad6f45|Blue Spruce#4f6e74|Strawberry Milk#f6bfc6|Gunmetal#4a4e52|Lemon Drop#f7e36a|Thistle Down#c6b2cb|Barn Owl#a99880|Pacific Fog#c9d0d1|Cayenne#b23a23|Celery Stalk#cfdba0|Mahogany#5e2c22|Morning Glory Blue#8fa5d8|Sand Dollar#e5dccb|Blueberry Pie#3f4a7a|Ginger Root#c78b52|Shale#6d6a66|Watermelon#f26b6b|Bay Leaf#7d8466|Spun Silk#efe8dd|Night Owl#2a2d3a|Cantaloupe#f7b27e|Heather Moor#9a86a0|Root Beer#5a2f1f|Seaside Cottage#bcd2d6|Chamomile#ede1a8|Black Coffee#2e2622|Tea Rose#f1c3b8|Cypress#56604a|Polished Brass#b9944a|Huckleberry#5b3c5c|Crisp Apple#c9d86a|Stonewash#8796a6|Nutmeg#8e5a3c|Blush Pink#f4c5c0|Sea Spray#d4e6e2|Coal Mine#2c2b2a|Orange Peel#f7962d|Lavender Mist#ddd5e9|Pinecone#6b4e35|Pale Moon#f2eedd|Dragonfly#3f6f7a|Paprika#c0452a|Willow Branch#9aa577|Steeple Gray#8a8a88|Champagne Toast#f1e2bb|Velvet Moss#5d6b3a|Lobster Bisque#e0805c|Blue Jay#4c74a8|Sandalwood#b59272|Elderberry#463047|Key Lime#d7e58a|Flint Gray#6e6b67|Candlelight#f6dd9e|Sunset Strip#f0805a|Mallard Green#3e5c4a|Powder Puff#f8e3e6|Chestnut#7a4a32|Rainy Day#9aa3a8|Goldenrod#d9a520|Amethyst#8a6bb0|Coffee Ice Cream#a07a5c|Spring Peas#a6c66b|Bramble#5a4450|Ivory Tower#f4efe2|Cerulean#4a8fc7|Tiger Lily#e5733a|Mossy Log#5f6340|Biscuit#e1c8a1|Nightshade#3c2f4d|Coastal Breeze#cfe2e4|Brown Sugar#a8714a|Plum Pudding#634356|Limestone#d8d3c7|Bubblegum#f5a3c7|Hunter Green#355e3b|Clover Honey#e8b44c|Ghost White#f4f4f8|Lagoon#3d8f95|Fire Engine#c9302c|Pressed Violet#7c6a93|Burlap Sack#b39a76|Frosted Glass#e3ebec|Espresso#3b2a24|Mango Sorbet#f9b85a|Cool Slate#6f7d86|Petal Soft#f7dde0|Wheatgrass#b2c070|Dusk#5c5875|Toffee#9e6b3f|Jellybean#e8577a|Tundra#8c9187|Lemon Meringue#f6ebb0|Sapphire#2a4d8f|Terracotta#c2623f|Birch Bark#e6e1d3|Plum Wine#6a2d4a|Lime Sherbet#d6ea9a|Concrete#9b9a97|Coral Bells#ec8a83|Indigo Night#2e2f5e|Maple Syrup#a85a24|Starfish#f2a07b|Rainforest#3e6b4b|Mauve Memory#b38d9f|Gold Leaf#d4af5a|Ash Gray#b2b0aa|Clam Chowder#efe7d6|Deep Plum#4f2442|Fern Frond#6b8f4e|Ember Glow#c84f2e|Whisper Blue#d6e1ea|Cork Board#b98c5f|Lullaby Lilac#d9d2e6|Bottle Green#2f5040|Sorbet Pink#f6b2b8|Tin Roof#9ea2a3|Cider Mill#c27b3c|Honeydew#e5f0c3|Blackboard#2f3533|Saltine#efe6cf|Raven Wing#24252b|Pecan Pie#8b5a36|Dandelion#f5d73b|Mist Gray#c5c8c4|Bordeaux#5c1f2b|Pearl Onion#eeebe3|Moonstone#c7cfd6|Cattail#8c7a55|Rose Quartz#eac4c7|Swamp Water#6d6f4a|Sunbeam#f8e17a|Garnet#7f2a33|Teal Waters#2e7d7a|Porcelain#f1efe9|Desert Sand#d9b98f|Midnight Blue#26304f|Lemon Zest#f2df4b|Cinder#4c4642|Shrimp Cocktail#f29a83|Lagoon Mist#a8d0cd|Fudge#5a3a2c|Lilac Bush#bba3cc|Basil Leaf#5c7a42|Hot Cocoa#7a4b3a|Polar Bear#f3f2ec|Tidewater#5c7f86|Cranberry Juice#a23545|Straw Hat#dcc282|Shadow Gray#6c6b6a|Lotus Blossom#e9b9c9|Pine Forest#2f4535|Scorched Earth#6e3b26|Baby Blue#bcd6ec|Mustard Seed#c9a03a|Blackcurrant#3d2337|Cloudberry#f0c27a|Weathered Wood#9b8f80|Snow Pea#cfe2a9|Nightfall#2b3040|Pink Lemonade#f7b8b6|Dune Grass#c3b98a|Red Thunderbird#7d2c2c|Chalk Dust#ece9e1|Bayberry#6c7c5c|Melted Butter#f6dc8c|Stormy Sea#4c5d68|Raspberry Swirl#c44a6a|Wicker Basket#c9a26b|Oxblood#5a1a1f|Cottonwood Fluff#e4e0cf|Cedar Chest#8b4f34|Glacier Blue#a7c7d6|Sour Lemon#efe048|Fawn#c4a284|Plum Blossom#d9a7c3|Cobblestone#7e7b75|Kumquat Orange#f39c3a|Spruce Tip#6f8f5a|Marshmallow#f6f2e8|Merlot#5d1c2c|Calm Waters#9fc1c6|Bran Muffin#9c6c43|Lavender Soap#c4b5dc|Green Tea#b9c68e|Iron Gate#4d4f50|Sunlit Meadow#d6d27a|Port Wine#5e2335|Quiet Harbor#7f97a3|Hen's Egg#efe3cc|Plaster Wall#e3ddd2|Woodsmoke#7a706a|Afternoon Nap#e8dccb|Secret Garden#4f6b4a|Rusty Bucket#9a5232|Lemonade Stand#f7e08c|Grandma's Quilt#c98a8a|Porch Swing#b9a58a|Muddy Boots#6b5440|Picnic Basket#c7955a|Library Green#3f5848|Smudged Charcoal#4a4847|Brass Bell#c4a14a|Pink Flamingo#f08aa5|Galoshes#e4b830|Tarnished Silver#a3a29c|Bonfire#c75b2a|Sugar Plum#8a4f7d|Night Swim#24394f|Haystack#d4b46a|Old Lace#f2e8d6|Wild Iris#6a5a9e|Rhubarb Stalk#c75a6d|Puddle#8f9a9e|Morning Toast#d9b07a|Sleepy Hollow#5f5a4a|Kettle Black#2a2826|Velvet Rope#7e2433|Linen Napkin#ece4d6|Soft Fern#b3c49a|Tin Can#a5a8a6|Ripe Fig#704560|Seal Gray#6d6e6b|Cupcake Frosting#f6d3df|Garden Hose#4f7f4a|Sea Lion#7d7468|Taxi Cab#f2c230|Snow Cone#f4a7b8|Cellar Door#5d4a3c|Sweet Pea#e8b9d0|Fireside#a6492a|River Rock#8a8780|Banana Bread#cfa76a|Moonlit Pond#3f5866|Peppercorn#4b4441|Duck Egg#c4dfd8|Clove#6a3e2e|Twine#c2a67a|Nautical Navy#273a5a|Watercress#6f9a52|Crushed Velvet#5a2340|Brown Paper#b48e66|Fresh Linen#f5f1e8|Cardinal#b3283a|Mossy Bank#6f7a4a
+`;
+
+const BANK = {
+
+magnetic: {
+  noun: `moon sun heart dream storm rain shadow light kiss whisper skin blood bone wind sea sky river fire honey milk chocolate garden rose petal summer winter spring autumn night morning day hour time love lover heaven ocean mountain window door bed table chair road city star symphony music song voice eye mouth hand hair lips tongue breath body soul ghost child mother father woman man girl boy friend enemy angel devil goddess god queen king world earth flower tree leaf seed root wing bird egg feather stone sand dust smoke mist shower cloud thunder lightning rainbow mirror picture page word book poem language story secret lie truth memory need desire joy sorrow pain luck chance peace war power beauty void sausage gorilla apparatus diamond pearl gold silver iron lace silk blanket pillow sweat tear laugh smile scream sigh wave tide shore island boat ship sail anchor bridge tower castle cathedral street alley lamp candle flame coffee wine bread butter cream peach apple cherry lemon orange plum spider snake cat dog horse cow pig bee butterfly worm fish shark whale ice snow heat sweater dress shoe hat coat umbrella vision trance delirium madness head neck shoulder knee finger belly thigh ankle chest throat wrist heel cheek eyelash freckle navel spine skull rib heartbeat pulse bruise scar wound kingdom empire throne crown sword shield arrow cage key lock chain rope thread needle knot ribbon velvet mask costume circus carnival parade festival party picnic holiday vacation journey voyage escape return arrival departure goodbye hello promise prayer wish curse blessing miracle mystery puzzle riddle question answer clue map compass ladder staircase basement roof chimney garage kitchen bathroom bedroom hallway porch yard fence gate`,
+  verb: `run fly sing dance kiss dream fall rise burn shine cry laugh sleep wake drink eat taste touch smell feel hear see watch wait want need love hate fear shake ache bleed beat break build climb crawl cut dive drift drive drown float flow forget remember give grow hide hold hurt jump lie lift live die melt move open close play pound pray pull push ride rip roll say shatter show sit slide smash soar spill spray stand stare steal stop swim swing talk tell think throw turn walk wander wash weep whip win wish wrap write moan blow boil gaze gleam glow murmur plunge bury carry catch chase dig fill find fix hang hunt kill knit leave lose make mend name paint plant pour read rest ring search sew shout sink skate sleepwalk smile speak stay sweep sweeten tangle tear trace travel trust unravel vanish whistle wobble yearn`,
+  adj: `blue red green yellow black white purple pink golden dark bright cool hot cold warm soft hard wet dry sweet bitter sour salty delicate tiny huge enormous gigantic little big tall short long thin fat round smooth rough wild calm quiet loud lazy mad sad happy lonely shy brave cruel gentle tender raw ripe rotten lush elaborate essential forgotten frantic mysterious peculiar perfect sacred secret shiny shimmering sleepy smoky sticky strange true false young old ancient new fierce bare naked empty full heavy deep shallow broken whole fragile still restless drunk beautiful ugly lovely clean dirty sharp dull blind deaf hungry thirsty tired awake asleep alive dead sick healthy rich poor cheap free bold proud humble jealous honest wicked holy ordinary rare common electric frozen hidden lost`,
+  adv: `always never forever slowly quickly softly gently quietly loudly suddenly sweetly madly deeply barely tenderly wildly boldly sadly happily lazily fiercely blindly endlessly secretly truly badly simply finally rarely often sometimes nightly daily`
+},
+
+oddball: {
+  noun: `whippoorwill kerfuffle brouhaha hullabaloo bumbershoot gobbledygook flibbertigibbet snollygoster collywobbles rigmarole shenanigan nincompoop poppycock balderdash codswallop flapdoodle gubbins doohickey thingamajig whatchamacallit gewgaw bibelot knickknack tchotchke folderol hobbledehoy ragamuffin scalawag rapscallion mountebank charlatan blatherskite lickspittle mugwump curmudgeon troglodyte quidnunc gadfly busybody tatterdemalion ziggurat zeppelin xylophone kazoo ocarina theremin calliope sousaphone accordion harmonica glockenspiel didgeridoo bagpipe aardvark axolotl capybara pangolin narwhal platypus wombat quokka okapi tapir dugong manatee nudibranch sea_cucumber blobfish lamprey hagfish kookaburra cassowary booby bowerbird hoopoe potoo nightjar dodo emu gnu yak zebu muskox lemming vole shrew marmot ocelot fuddy-duddy bric-a-brac hodgepodge mishmash smorgasbord gallimaufry salmagundi farrago potpourri wingding shindig hootenanny jamboree fandango caboodle doodad gizmo widget sprocket gimcrack hokum bunkum malarkey baloney humbug flummery claptrap twaddle drivel blather bilge hogwash tommyrot piffle fiddle-faddle borborygmus defenestration snickersnee bandersnatch borogove jabberwock catawampus skullduggery tomfoolery monkeyshines whirligig thingumbob kludge rhubarb gazump lollipop bumpkin popinjay jackanapes ninnyhammer dunderhead numbskull lummox galoot bozo nitwit dingbat scofflaw wiseacre smart-aleck know-it-all fusspot crosspatch sourpuss killjoy wet_blanket stick-in-the-mud blunderbuss gramarye haberdashery cockatoo marmoset mongoose wallaby bandicoot numbat pademelon wobbegong anglerfish oarfish sunfish mudskipper grunion tardigrade earwig silverfish bombardier_beetle walrus sloth`,
+  verb: `lollygag skedaddle bamboozle hornswoggle mollycoddle schmooze absquatulate bumfuzzle discombobulate defenestrate kibitz noodge canoodle dillydally piddle tootle galumph chortle snorkel flummox befuddle hoodwink finagle wheedle cajole gallivant frolic cavort caper gambol scrump scrimshaw kowtow hobnob carouse waffle dither faff blether natter yammer jabber prattle gibber burble snarf scarf hoover`,
+  adj: `cattywampus cockamamie cantankerous persnickety topsy-turvy lackadaisical gobsmacked flabbergasted bodacious rambunctious lugubrious mellifluous frabjous vorpal slithy mimsy wonky squiggly wobbly floppy jiggly squishy zany kooky loopy goofy cockeyed lopsided gangly gawky dowdy frumpy fusty musty crotchety cranky grumpy dotty batty bonkers barmy nutty hirsute pulchritudinous sesquipedalian obstreperous fractious recalcitrant pusillanimous bumptious bibulous gormless feckless hapless ramshackle rickety rumbustious skew-whiff hunky-dory namby-pamby wishy-washy hoity-toity hotsy-totsy itsy-bitsy teeny-weeny okey-dokey razzle-dazzle snazzy jazzy zippy peppy perky spiffy nifty swanky ritzy`,
+  adv: `widdershins higgledy-piggledy helter-skelter willy-nilly pell-mell hugger-mugger lickety-split hither thither yonder askew akimbo agog awry aslant asunder kitty-corner hippity-hop catercorner every-which-way hell-for-leather`
+},
+
+delicious: {
+  adj: `tantalizing buttery unctuous luscious succulent velvety silky creamy toothsome sumptuous delectable scrumptious mouthwatering savory piquant tangy zesty zingy citrusy briny charred caramelized toasty golden-brown flaky crumbly crispy crackling crunchy chewy gooey melty molten syrupy honeyed sugared candied jammy fudgy custardy pillowy fluffy airy feathery juicy plump glossy lacquered glazed drippy oozing spiced peppery fiery smoldering earthy malty yeasty doughy brothy decadent indulgent luxurious opulent lavish heady fragrant aromatic perfumed redolent ambrosial nectarous saccharine cloying tart puckery bracing effervescent fizzy bubbly frothy foamy whipped clotted marbled seared roasted braised poached sizzling steaming piping-hot icy chilled sun-warmed dewy plush voluptuous sensuous sultry languid indolent ravishing seductive irresistible beguiling enticing alluring heavenly divine sublime blissful satiny supple dulcet mellow full-bodied robust hearty homey satisfying warming wholesome buoyant crisp sparkling silken marrowy gingery treacly smoky-sweet tender-crisp scorched burnished blistered sticky-sweet lemony herby garlicky oniony vinegary smoked cured pickled brined salted salt-kissed sun-ripened oven-warm fresh-baked hand-churned slow-cooked`,
+  noun: `ambrosia nectar marrow ganache praline nougat marzipan caramel custard meringue brioche croissant crumpet scone shortbread treacle cardamom saffron vanilla cinnamon ginger crème_brûlée tiramisu soufflé bonbon sorbet gelato zabaglione syllabub trifle crumble streusel frangipane panna_cotta clotted_cream ricotta burrata brie mascarpone prosciutto pancetta chorizo gravy broth bisque chowder consommé risotto polenta gnocchi ravioli dumpling pierogi empanada samosa baklava halva churro beignet fritter doughnut cruller eclair profiterole macaron madeleine tart galette crepe waffle pancake syrup jam jelly compote chutney relish aioli hollandaise béarnaise pesto gremolata salsa crust crumb morsel tidbit mouthful feast banquet repast indulgence delicacy umami brisket pot_roast cassoulet bouillabaisse gumbo jambalaya paella ramen pho dashi miso kimchi tamale mole biscuits_and_gravy buttermilk sourdough focaccia baguette challah pretzel bagel butter_tart fudge toffee brittle taffy licorice gumdrop marshmallow cocoa espresso cappuccino chai eggnog mulled_wine cider lemonade sherbet parfait sundae milkshake cheesecake shortcake pound_cake angel_food strudel kugel cannoli zeppole sfogliatella dulce_de_leche flan horchata mochi dumplings bao`,
+  verb: `savor relish devour slurp lick sip gulp guzzle munch gnaw chew swallow sample gorge nosh graze dunk smear slather baste braise simmer sear sauté caramelize whisk knead fold marinate steep infuse ooze dribble froth churn swirl dollop dust grate shave toast char roast smoke cure ferment brine poach flambé glaze candy drizzle sprinkle frost ice nibble`,
+  adv: `deliciously lusciously sumptuously greedily hungrily lavishly richly decadently delectably indulgently temptingly invitingly languidly blissfully gloriously generously voraciously ravenously daintily messily lovingly`
+},
+
+novelistic: {
+  adj: `splendid exceeding agreeable disagreeable amiable abominable odious insufferable impertinent insolent vexatious wretched miserable dreadful frightful shocking scandalous improper indecorous genteel well-bred ill-bred vulgar respectable eligible handsome comely plain fine elegant accomplished obliging tolerable intolerable ardent fervent fervid melancholy despondent forlorn disconsolate sanguine felicitous prodigious capital tremendous excellent superior inferior trifling paltry sundry divers singular remarkable extraordinary uncommon tiresome wearisome tedious mortifying vexed indignant affronted aggrieved resolute steadfast taciturn reticent garrulous loquacious officious pompous conceited vain haughty supercilious condescending obsequious sycophantic sly cunning artful ingenuous candid frank earnest grave solemn sober dissipated profligate dissolute rakish gallant chivalrous dashing debonair fastidious punctilious scrupulous prudent imprudent sensible insensible amenable affable genial jovial convivial hale consumptive feverish delirious faint languishing pallid sallow florid ruddy wan careworn ill-fated unfortunate benevolent magnanimous munificent parsimonious penurious mercenary avaricious covetous villainous base contemptible despicable noble venerable estimable worthy unworthy beloved dearest esteemed abject impudent insipid ineffable inexorable implacable insensate querulous petulant peevish sullen mirthful jocund blithe gay sprightly vivacious winsome bewitching fetching modish fashionable unfashionable dowdy shabby-genteel threadbare impecunious`,
+  noun: `countenance visage fortnight parlour drawing-room morning-room antechamber vestibule carriage barouche phaeton chaise gig coachman footman butler housekeeper governess curate vicar parson rector squire baronet heir heiress estate inheritance fortune dowry annuity guinea shilling sixpence farthing ballroom assembly quadrille cotillion reel waltz courtship suitor admirer beau proposal betrothal engagement elopement scandal impropriety indiscretion reputation propriety decorum civility gentility breeding acquaintance correspondence missive epistle postscript sentiment sensibility affection attachment esteem regard disposition temper vexation mortification agitation perturbation consternation trepidation apprehension ennui folly caprice whim fancy conjecture supposition tidings sojourn excursion promenade constitutional supper luncheon tea-tray sideboard pianoforte spinet harp embroidery needlework bonnet shawl pelisse reticule spectacles snuffbox candlestick hearth grate mantelpiece shrubbery lodge parsonage rectory abbey manor wardship guardian benefactor ward orphan foundling heathen scoundrel rogue knave blackguard cad bounder coxcomb fop dandy spinster bachelor widow dowager matron chaperone confidante intimate rival nemesis villainy treachery perfidy calumny slander gossip rumour intrigue secret_passage locket letter seal wax sealing_ring fancy-dress masquerade theatricals charade whist cribbage backgammon`,
+  verb: `endeavour contrive resolve entreat implore beseech solicit oblige bestow condescend venture presume surmise apprehend comprehend perceive behold espy observe remark declare exclaim protest avow profess confide disclose divulge conceal dissemble feign affect repine languish swoon faint lament bemoan bewail deplore abhor detest despise admire revere venerate dote cherish forbear refrain abstain desist persevere persist acquiesce consent assent demur hesitate falter waver tarry depart quit dine sup inquire scold chide upbraid reproach rebuke admonish censure vex mortify astonish astound amaze bewilder perplex confound dismay discompose betroth jilt elope court woo flirt simper flatter cajole importune vouchsafe deign`,
+  adv: `exceedingly excessively uncommonly tolerably indifferently presently directly forthwith henceforth heretofore hitherto thereupon withal perchance peradventure verily indeed certainly assuredly decidedly positively absolutely tremendously prodigiously vastly wholly utterly entirely heartily earnestly gravely solemnly civilly coldly warmly archly slyly drily sharply smartly gaily merrily cheerfully sorrowfully mournfully wistfully hastily abruptly instantly scarcely hardly frankly candidly sincerely faithfully devotedly prettily handsomely shockingly dreadfully frightfully awfully altogether particularly singularly remarkably infinitely amiably agreeably insufferably impertinently`
+},
+
+nature: {
+  noun: `wren kestrel heron egret bittern plover sandpiper curlew godwit dunlin killdeer kingfisher nuthatch chickadee titmouse warbler vireo tanager grosbeak bunting finch siskin crossbill junco towhee thrasher mockingbird catbird starling grackle cowbird oriole meadowlark bobolink swallow swift martin phoebe flycatcher kingbird woodpecker flicker sapsucker hummingbird owl nighthawk loon grebe cormorant pelican gannet puffin petrel albatross osprey harrier goshawk falcon merlin peregrine condor vulture magpie jackdaw rook raven crow jay waxwing lark pipit wagtail dipper ptarmigan grouse quail pheasant partridge sandhill_crane stork ibis spoonbill flamingo avocet stilt tern gull larkspur foxglove columbine lupine yarrow tansy aster harebell trillium bloodroot hepatica primrose cowslip vetch milkweed fireweed sweetpea snapdragon hollyhock delphinium peony camellia gardenia jasmine honeysuckle lilac magnolia azalea rhododendron hydrangea dahlia zinnia marigold calendula nasturtium poppy chicory teasel bindweed morning_glory moonflower edelweiss gentian saxifrage anemone crocus hyacinth narcissus jonquil tulip iris orchid lady's_slipper hellebore foxtail sedum tamarack larch hemlock spruce fir cedar juniper yew alder aspen birch beech hornbeam hawthorn rowan sycamore buckeye hickory walnut butternut catalpa locust mesquite willow linden basswood elm oak maple ginkgo sequoia redwood baobab banyan mangrove tupelo sassafras pawpaw dogwood redbud eucalyptus acacia feldspar quartz mica obsidian basalt granite gneiss schist slate marble jasper agate chalcedony carnelian onyx malachite azurite lapis_lazuli turquoise beryl tourmaline topaz peridot opal pyrite galena cinnabar hematite magnetite fluorite calcite gypsum alabaster selenite geode chert jet damselfly cicada katydid cricket mantis beetle weevil ladybug lacewing caddisfly mayfly moth luna_moth monarch swallowtail fritillary skipper hornet wasp bumblebee newt salamander toad spring_peeper bullfrog terrapin tortoise otter beaver muskrat badger stoat weasel ermine marten fox lynx bobcat cougar elk moose caribou pronghorn bison hare jackrabbit chipmunk mole hedgehog porcupine opossum raccoon skunk bat liverwort bracken fern puffball morel chanterelle toadstool mycelium cattail bulrush sedge rush reed wild_rice sawgrass tumbleweed sagebrush yucca saguaro cholla prickly_pear agave ocotillo creosote nettle burdock plantain sorrel wild_mint watercress duckweed water_lily lotus kelp eelgrass barnacle limpet periwinkle whelk cockle mussel scallop sea_urchin anemone starfish sand_dollar jellyfish seahorse octopus squid cuttlefish nautilus`,
+  verb: `bloom blossom molt nest roost burrow forage hibernate migrate pollinate germinate sprout unfurl wilt flourish wither seed scatter graze rut spawn fledge preen`,
+  adj: `verdant leafy mossy dappled speckled mottled feathered thorny brambly feral migratory nocturnal diurnal evergreen deciduous perennial wildflowered weedy overgrown tangled rooted gnarled knotted barked`
+},
+
+weather: {
+  noun: `gloaming squall petrichor haar cirrus cumulus stratus nimbus cumulonimbus mackerel_sky zephyr sirocco mistral chinook monsoon typhoon hurricane cyclone tornado waterspout downpour deluge mizzle sleet hail graupel rime hoarfrost dew fog haze smog whiteout blizzard flurry snowdrift snowfall thaw sunbreak sunshower moonbow sundog aurora twilight dawn daybreak sunrise sunset afterglow alpenglow eventide zenith horizon firmament welkin thunderhead gust gale breeze updraft downdraft doldrums lull drought heatwave dog_days almanac barometer weathervane windsock rain_gauge forecast cloudburst virga fogbow starlight moonrise moonset crescent cold_snap indian_summer heat_lightning sheet_lightning ball_lightning dust_devil haboob williwaw nor'easter trade_wind jet_stream rain_shadow front sleet_storm ice_storm snow_squall frost_heave icicle snowflake raindrop puddle mud slush hailstone dewdrop rainfall overcast cloudbank cloud_cover sky_glow blue_hour golden_hour weather_front`,
+  verb: `pour pelt teem bluster billow scud darken brighten clear freeze drizzle mist gust spit sprinkle storm snow rain hail thunder`,
+  adj: `blustery gusty squally drizzly misty foggy hazy muggy balmy humid sweltering scorching parched arid frigid frosty wintry bleak dreary leaden glowering brooding stormy tempestuous turbulent becalmed windswept rain-soaked sun-dappled starlit moonlit crepuscular twilit luminous cloudless pearly sodden drenched dripping steamy sticky mild temperate brisk nippy biting raw bitter crystalline snowbound iced-over storm-tossed weather-beaten sunbaked sun-bleached thunderous`,
+  adv: `overhead skyward windward leeward downwind upwind`
+},
+
+landscape: {
+  noun: `estuary arroyo fen bayou moor heath bog marsh swamp mire slough tarn loch fjord firth cove inlet bay atoll shoal sandbar spit isthmus peninsula archipelago headland promontory cliff bluff escarpment ridge crag tor butte mesa canyon gorge ravine gully gulch dell glen dale vale valley meadow pasture paddock prairie steppe savanna veldt pampas desert dune oasis wadi badlands scree talus moraine cirque col saddle pass summit peak foothill knoll hillock hummock barrow cairn ford weir millrace wellspring headwater confluence delta floodplain oxbow rapids cascade waterfall cataract eddy whirlpool backwater creek brook rill runnel culvert canal towpath causeway levee dike embankment hedgerow coppice copse thicket spinney grove orchard vineyard wildwood woodland clearing glade bower arbor grotto cave cavern sinkhole hot_spring geyser caldera crater volcano glacier icefield crevasse snowfield attic cellar crawlspace garret loft hayloft root_cellar crossroads cul-de-sac alleyway boardwalk pier jetty wharf quay dock marina waterfront underpass overpass viaduct trestle railyard depot station platform terminus tollbooth roadhouse diner motel boardinghouse tenement rowhouse brownstone bungalow cottage cabin homestead farmstead ranch silo granary barnyard chicken_coop greenhouse conservatory gazebo pergola belvedere cupola belfry steeple spire turret parapet battlement rampart moat drawbridge courtyard cloister crypt catacomb mausoleum cemetery churchyard chapel sanctuary nave vestry rotunda atrium arcade colonnade piazza plaza boulevard esplanade marketplace bazaar souk laneway backstreet thoroughfare junction roundabout campground trailhead overlook outpost frontier borderland hinterland backcountry wilderness lighthouse boathouse bathhouse icehouse smokehouse springhouse lean-to shanty hut yurt tipi igloo treehouse fairground racetrack drive-in boardwalk_arcade bus_depot laundromat pawnshop five-and-dime soda_fountain bowling_alley roller_rink ballroom_floor hotel_lobby train_car sleeper_car dining_car stairwell fire_escape rooftop balcony veranda stoop breezeway mudroom pantry larder scullery nursery study library observatory`,
+  adj: `craggy rugged barren desolate remote secluded sheltered marshy boggy sandy rocky pebbly loamy fertile arable fallow terraced sunken abandoned derelict ruined crumbling uncharted far-flung landlocked coastal alpine subalpine boreal tropical subterranean underground upland lowland highland`
+},
+
+trades: {
+  noun: `cooper chandler fletcher bowyer milliner haberdasher ostler wheelwright cartwright shipwright millwright wainwright lamplighter knocker-upper rag-and-bone_man tinker tinsmith blacksmith farrier whitesmith locksmith goldsmith silversmith coppersmith pewterer cutler armorer bladesmith glazier glassblower potter tanner currier cordwainer saddler harness_maker chapman peddler hawker costermonger fishmonger ironmonger cheesemonger hosier hatter draper mercer clothier tailor seamstress dressmaker weaver spinner fuller dyer carder knitter lacemaker embroiderer quilter upholsterer joiner carpenter cabinetmaker turner sawyer woodcutter collier miner quarryman stonemason bricklayer thatcher tiler plasterer chimney_sweep ratcatcher molecatcher gamekeeper groundskeeper gardener nurseryman shepherd swineherd goatherd cowherd drover stockman ploughman reaper thresher miller baker brewer distiller vintner cellarman maltster butcher poulterer grocer greengrocer apothecary chemist herbalist barber-surgeon leech midwife wetnurse tutor schoolmarm scrivener scribe clerk copyist bookbinder printer typesetter compositor engraver lithographer illuminator cartographer surveyor clockmaker watchmaker jeweler lapidary gemcutter telegrapher switchboard_operator postmaster courier herald town_crier bellringer sexton gravedigger undertaker coffin_maker ferryman boatman bargeman lighterman lockkeeper lighthouse_keeper harbormaster stevedore longshoreman deckhand cabin_boy purser quartermaster boatswain coxswain helmsman navigator whaler sealer trapper fur_trader prospector assayer ice_cutter iceman milkman knife_grinder organ_grinder busker juggler acrobat ringmaster lion_tamer fortune_teller phrenologist alchemist astrologer conjurer tightrope_walker sword_swallower fire-eater snake_charmer medicine_man tooth-puller bonesetter cobbler soapmaker candlemaker basketweaver broom_maker ropemaker sailmaker netmaker fisherwife oysterman clam_digger cranberry_picker hop_picker fruit_peddler pie_man muffin_man flower_seller matchgirl newsboy bootblack lamplight_boy page_boy bellhop elevator_operator usherette soda_jerk carhop telephone_girl typist stenographer projectionist`
+},
+
+objects: {
+  noun: `ewer thimble hatpin gramophone antimacassar washboard quill nib blotter sealing_wax signet letter_opener pocket_watch fob monocle pince-nez lorgnette spyglass sextant astrolabe hourglass sundial metronome music_box zoetrope kaleidoscope stereoscope magic_lantern daguerreotype tintype locket cameo brooch hairpin hatbox steamer_trunk carpetbag valise satchel portmanteau chatelaine buttonhook shoehorn bootjack chamberpot washstand basin pitcher warming_pan hot-water_bottle chamberstick oil_lamp hurricane_lamp lantern wick snuffer tinderbox bellows poker andiron firedog coal_scuttle kettle samovar teapot tea_cozy creamer sugar_tongs gravy_boat tureen salver decanter carafe cruet punch_bowl butter_churn icebox mangle wringer flatiron sadiron clothespin clothesline washtub scrub_brush feather_duster carpet_beater butter_mold cookie_cutter rolling_pin sifter mortar pestle colander ladle trivet skillet griddle dutch_oven spittoon cuspidor ashtray humidor walking_stick umbrella_stand hall_tree hope_chest armoire wardrobe chiffonier escritoire roll-top_desk rocking_chair fainting_couch chaise_longue settee davenport ottoman footstool hassock doily tablecloth napkin_ring candelabra chandelier sconce gaslight crystal_radio typewriter carbon_paper mimeograph rotary_phone party_line telegraph phonograph victrola needle cassette eight-track reel-to-reel slide_projector filmstrip transistor_radio jukebox pinball_machine cigarette_case matchbook penknife slide_rule abacus ledger rolodex paperweight snow_globe pincushion darning_egg tape_measure spool bobbin shuttle loom spinning_wheel distaff sewing_machine dress_form hatstand mannequin ventriloquist_dummy marionette jack-in-the-box spinning_top yo-yo marbles jacks pick-up_sticks tiddlywinks rocking_horse hobbyhorse tin_soldier wind-up_toy kewpie_doll lunchbox thermos percolator toaster_oven fondue_pot jello_mold tupperware lava_lamp beanbag shag_rug macramé_owl mood_ring pet_rock rubik's_cube polaroid flashcube instamatic walkman boombox pager floppy_disk answering_machine vcr betamax console_tv rabbit_ears tv_tray hi-fi turntable stylus record_sleeve mixtape cassette_deck milk_bottle bread_box cake_tin cookie_jar recipe_box apron hairnet curlers bobby_pin compact powder_puff lipstick_tube perfume_atomizer vanity hand_mirror hairbrush shaving_brush straight_razor strop pipe tobacco_tin keyring skeleton_key padlock doorknob doorbell mail_slot weathercock birdcage birdbath trellis wheelbarrow watering_can garden_trowel scarecrow lawn_flamingo garden_gnome porch_light screen_door storm_cellar ice_tray`
+},
+
+fabrics: {
+  noun: `burlap gossamer tulle seersucker corduroy chiffon organza taffeta satin brocade damask chintz calico gingham muslin cheesecloth percale poplin chambray denim dungaree twill tweed herringbone houndstooth flannel fleece felt wool cashmere mohair angora alpaca merino lambswool tartan plaid paisley jacquard tapestry chenille terrycloth jersey lycra nylon rayon polyester acetate oilcloth canvas sailcloth sackcloth hessian jute sisal raffia rattan wicker cork leather suede chamois buckskin moleskin oilskin sharkskin crepe crinoline eyelet tatting crochet macramé boucle georgette voile batiste lisle grosgrain moire shantung pongee dupioni charmeuse sateen madras ikat batik shibori kente khadi linen hemp ramie flax gauze marabou sequin rhinestone fringe tassel pompom ruffle ruche smocking pleat tuck piping selvage hem bias_tape rickrack appliqué patchwork quilting batting interfacing bunting tarpaulin vinyl latex rubber patent_leather mesh netting lamé velour velveteen terry_velour faux_fur sherpa shearling ermine_trim sable mink_stole feather_boa`,
+  adj: `nubby fuzzy furry downy slippery slick sleek matte grainy gritty coarse scratchy prickly bristly woolly felted pilled threadbare frayed tattered ragged moth-eaten worn crinkled crumpled rumpled wrinkled creased puckered pleated quilted tufted ribbed corrugated knobbly bumpy pitted pocked dimpled rippled ridged grooved embossed crackled crazed waxy leathery papery chalky powdery gauzy sheer diaphanous translucent filmy wispy spongy springy squashy rubbery gummy tacky clammy dank damp slimy oily greasy starched pressed hand-stitched handwoven hand-knit homespun hand-me-down patched darned mended embroidered beaded sequined fringed tasseled lacy ruffled frilly flouncy billowy drapey clingy snug baggy boxy`
+},
+
+sounds: {
+  noun: `susurrus tintinnabulation cacophony din racket clamor tumult uproar hubbub ruckus fracas commotion clangor reverberation echo resonance timbre cadence lilt drumroll fanfare reveille dirge requiem threnody birdsong dawn_chorus foghorn church_bell car_horn kettle_whistle train_whistle hum static white_noise ringing_ears applause encore ovation silence hush pause rest crescendo diminuendo staccato legato pizzicato tremolo vibrato glissando arpeggio refrain chorus verse harmony melody counterpoint descant`,
+  verb: `thrum clatter plink rasp hiss clang clink chink jangle jingle tinkle chime peal toll gong twang thwack whack smack crack snap pop fizzle crackle crunch squelch squish squeak squeal creak croak caw cackle cluck coo warble trill chirp tweet twitter cheep hoot screech shriek yelp yip yowl howl bray neigh whinny nicker snort grunt oink moo bleat purr growl snarl roar rumble grumble mumble mutter babble burble gurgle glug plop drip splash splosh slosh swish swoosh whoosh whir buzz drone whine wheeze toot honk beep blare bellow boom bang thud thump clomp clop stomp tromp patter pitter-patter rat-a-tat rap knock clack click tick tock clunk clank thunk plunk kerplunk strum rustle crinkle flutter flap hush shush gasp hiccup belch burp sneeze cough snore yodel croon chant ululate keen wail whimper sob blubber snivel giggle titter snicker snigger chuckle guffaw hum tap zing zap sproing boing bloop blip ping`
+},
+
+folklore: {
+  noun: `selkie kelpie golem banshee wyvern sprite changeling will-o'-the-wisp brownie boggart bogle hobgoblin goblin pixie fairy faerie elf dwarf gnome kobold leprechaun clurichaun pooka dullahan merrow mermaid merman siren nereid naiad dryad hamadryad oread nymph satyr faun centaur minotaur gorgon harpy chimera hydra cerberus griffin hippogriff pegasus unicorn phoenix basilisk cockatrice manticore sphinx roc thunderbird wendigo sasquatch bigfoot yeti jackalope chupacabra mothman jersey_devil kraken leviathan behemoth sea_serpent lindworm dragon drake wyrm djinn genie ifrit ghoul rakshasa naga kitsune tanuki kappa tengu oni yokai baku bakeneko qilin fenghuang jiangshi dybbuk vampire strigoi nosferatu werewolf lycanthrope loup-garou rusalka domovoi leshy baba_yaga koschei firebird troll ogre giant cyclops jotun valkyrie norn draugr nisse tomte krampus erlking lorelei nixie undine sylph homunculus familiar poltergeist wraith specter revenant phantom shade spook apparition haint bogeyman sandman tooth_fairy hag crone witch warlock wizard sorcerer enchantress oracle soothsayer bard skald druid trickster anansi brer_rabbit puck robin_goodfellow queen_mab oberon titania pan talisman amulet charm hex curse spell potion elixir philter grimoire cauldron broomstick wand scrying_glass crystal_ball rune sigil fairy_ring mandrake wishbone horseshoe glass_coffin poisoned_apple spindle magic_bean beanstalk gingerbread_house seven-league_boots invisibility_cloak golden_goose fairy_godmother wicked_stepmother woodcutter's_daughter enchanted_forest glass_mountain castle_in_the_air happily_ever_after once_upon_a_time`,
+  adj: `enchanted bewitched spellbound cursed haunted spectral ghostly eldritch otherworldly fey uncanny unearthly mythic legendary fabled storied charmed hexed possessed wraithlike shapeshifting immortal undying`
+},
+
+science: {
+  noun: `nebula perihelion aphelion umbra penumbra isotope magnetism spore eclipse comet meteor meteorite asteroid quasar pulsar supernova nova galaxy constellation orbit apogee perigee equinox solstice parallax redshift singularity event_horizon wormhole gravity inertia momentum entropy velocity friction refraction diffraction prism spectrum wavelength frequency oscillation pendulum vector fulcrum lever pulley axle gyroscope centrifuge vacuum plasma ion electron proton neutron photon quark neutrino atom molecule compound element catalyst enzyme protein helix chromosome genome gene mitochondria nucleus ribosome membrane cell organism microbe bacterium virus amoeba paramecium plankton diatom algae symbiosis photosynthesis chlorophyll osmosis metamorphosis chrysalis larva pupa embryo fossil amber trilobite ammonite stratum sediment magma lava fault fissure epicenter aftershock seismograph stalactite stalagmite crystal lattice polymer alloy mercury quicksilver cobalt phosphorus sulfur helium neon argon xenon tungsten titanium radium uranium lithium carbon graphite hydrogen oxygen ozone nitrogen solvent distillation filament circuit current voltage magnet compass telescope microscope lens petri_dish beaker flask test_tube bunsen_burner pipette specimen hypothesis theorem axiom equation fraction integer infinity zero cipher fractal algorithm paradox probability vertex tangent radius diameter circumference sphere cube spiral ellipse parabola hyperbola asymptote light-year black_hole dark_matter big_bang solar_wind sunspot solar_flare corona exoplanet moonlet ring_system kuiper_belt oort_cloud space_probe satellite rover lunar_module spacesuit zero_gravity half-life chain_reaction feedback_loop tipping_point ecosystem biome food_web keystone_species pollinator watershed aquifer permafrost core mantle crust tectonic_plate continental_drift ice_age`,
+  verb: `oscillate refract diffract evaporate condense sublimate crystallize oxidize ignite combust fuse dissolve precipitate catalyze mutate evolve replicate divide calcify fossilize erode magnetize accelerate decelerate orbit eclipse radiate`,
+  adj: `radioactive phosphorescent bioluminescent fluorescent incandescent iridescent opalescent opaque volatile inert gaseous liquid magnetic gibbous elliptical celestial lunar solar stellar sidereal orbital atomic subatomic microscopic cellular primordial tectonic geothermal infrared ultraviolet weightless airless frictionless supersonic infinite exponential prime irrational imaginary binary`
+},
+
+gesture: {
+  verb: `saunter flinch fidget shrug clench sway linger tremble amble stroll mosey shuffle shamble lumber trudge plod slog tramp traipse stride strut swagger sashay flounce prance skip hop leap bound vault lunge pounce scramble scurry scuttle scamper dart dash bolt sprint lope jog trot gallop canter tiptoe creep sneak slink skulk prowl stagger stumble totter teeter lurch reel careen sprawl slump slouch hunch crouch squat kneel stoop bow curtsy genuflect nod beckon wave wink blink squint glance glimpse peer gape gawk ogle glare glower scowl frown grimace wince smirk sneer pout grin beam leer blush flush bristle stiffen startle jolt jerk twitch shiver shudder quiver quake writhe squirm wriggle wiggle jiggle drum clap applaud cup cradle clasp grasp grip clutch seize snatch grab pinch tweak nudge poke prod jab elbow shove jostle tug yank heave hoist haul drag lug tote brandish wield flourish gesture wag nuzzle cuddle snuggle nestle embrace hug squeeze caress stroke pat tickle tousle preen primp fluff uncross tuck lounge loll recline perch straddle lean tilt cock incline swivel pivot twirl pirouette whirl twist sidle edge inch wade paddle flounder bob duck dodge swerve weave feint parry tense relax exhale inhale sniff snuffle mouth bite wring wipe dab blot rub scratch fumble grope paw fiddle twiddle doodle scribble gesticulate mime sulk mope brood fret pace hover loiter dawdle hurry stretch yawn sag droop`,
+  adv: `sheepishly furtively stealthily nervously awkwardly gingerly gracefully clumsily briskly jauntily sullenly wearily warily brazenly coyly shyly primly stiffly limply idly absently distractedly reluctantly eagerly impatiently haughtily defiantly ruefully wryly grimly tremulously breathlessly listlessly restlessly fitfully drowsily dreamily jerkily nimbly deftly heavily lightly loosely tightly hurriedly leisurely aimlessly purposefully sidelong backward headlong barefoot sulkily huffily pertly flippantly glumly morosely blithely serenely placidly tensely anxiously fretfully woozily giddily dizzily`
+}
+
+};
+
+
+/* A second helping, merged into the families above at load time. */
+const EXTRA = {
+  weather: { noun: `thunderstorm rainstorm firestorm sandstorm hailstorm windstorm squall_line humidity dewpoint mirage heat_shimmer snow_angel mud_season spring_thaw first_frost last_light morning_star evening_star moonbeam sunbeam shadowfall cloudscape skyline nightglow sunglow`,
+             adv: `stormily breezily cloudily sunnily frostily mistily hazily` },
+  sounds: { adj: `hushed muffled muted echoing booming shrill reedy raspy husky gravelly throaty tinny brassy plaintive lilting melodic tuneless discordant jangly resonant sonorous silvery clarion strident piercing whispery breathy murmurous rumbly crackly`,
+            adv: `noisily silently audibly inaudibly shrilly hoarsely huskily melodiously tunefully raucously` },
+  folklore: { noun: `nuckelavee each-uisge cu_sith black_shuck barghest gytrash redcap tommyknocker wight barrow-wight corpse_candle jack-o'-lantern hinkypunk fetch doppelganger`,
+              adv: `magically eerily uncannily mysteriously spookily` },
+  trades: { noun: `scissor-grinder dairymaid milkmaid scullery_maid lady's_maid valet chambermaid laundress washerwoman charwoman nursemaid ploughboy stable_boy errand_boy` },
+  objects: { noun: `fountain_pen penny_whistle tin_whistle cigar_box button_tin sewing_basket mending_basket thermometer mantel_clock cuckoo_clock grandfather_clock alarm_clock egg_timer kitchen_scale butter_dish salt_cellar pepper_mill nutcracker corkscrew bottle_opener can_opener egg_beater apple_peeler` },
+  gesture: { adv: `timidly dejectedly proudly smugly cautiously carelessly casually formally stoically tearfully gleefully joyfully` },
+  magnetic: { adv: `gladly` },
+  delicious: { adv: `juicily creamily crisply fragrantly aromatically luxuriously` },
+  novelistic: { adv: `amply abundantly copiously grievously monstrously exquisitely` },
+  science: { adv: `magnetically radiantly luminously exponentially` },
+  oddball: { adv: `bumblingly gormlessly kookily zanily` },
+  landscape: { adv: `inland offshore upstream downstream uphill downhill overland` },
+  fabrics: { adv: `snugly` }
+};
+for (const fam of Object.keys(EXTRA)) {
+  for (const pos of Object.keys(EXTRA[fam])) {
+    BANK[fam][pos] = (BANK[fam][pos] || '') + ' ' + EXTRA[fam][pos];
+  }
+}
+
+/* ================================================================
+   BUILD THE POOL
+   ================================================================ */
+const FAMILY_LABELS = {
+  color: 'paint chip', magnetic: 'magnetic poetry', oddball: 'oddball',
+  delicious: 'delicious', novelistic: 'old novel', nature: 'field guide',
+  weather: 'weather & sky', landscape: 'place', trades: 'old trade',
+  objects: 'old object', fabrics: 'fabric & texture', sounds: 'sound',
+  folklore: 'folklore', science: 'science & sky', gesture: 'gesture'
+};
+const POS = ['noun', 'verb', 'adj', 'adv'];
+
+function buildPool() {
+  const seen = new Set();
+  const colors = [];
+  const words = [];
+  PAINT_CHIPS.split('|').map(s => s.trim()).filter(Boolean).forEach(entry => {
+    const [name, hex] = entry.split('#');
+    const key = name.toLowerCase().trim();
+    if (!name || seen.has(key)) return;
+    seen.add(key);
+    colors.push({ text: name.trim(), pos: 'color', family: 'color', hex: '#' + hex.trim() });
+  });
+  for (const family of Object.keys(BANK)) {
+    for (const pos of POS) {
+      const list = BANK[family][pos];
+      if (!list) continue;
+      list.split(/\s+/).forEach(raw => {
+        const w = raw.replace(/[?]/g, '').trim();
+        if (!w) return;
+        const text = w.replace(/_/g, ' ');
+        const key = text.toLowerCase();
+        if (seen.has(key)) return;
+        seen.add(key);
+        words.push({ text, pos, family });
+      });
+    }
+  }
+  return { colors, words };
+}
+
+const POOL = buildPool();
+
+/* ================================================================
+   GENERATOR WITH BALANCE CHECKS
+   Rule 1: exactly 2 paint chips, or 1 when the set has fewer than 10 words.
+   Rule 2: no part of speech (noun, verb, adjective, adverb) may fill
+           more than half of the set.
+   ================================================================ */
+function randInt(n) {
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n;
+  }
+  return Math.floor(Math.random() * n);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = randInt(i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function generateWordSet(total) {
+  total = Math.max(3, Math.min(30, Math.round(total)));
+  const colorCount = total < 10 ? 1 : 2;
+  const cap = Math.floor(total / 2);
+  const picked = [];
+  const used = new Set();
+
+  // Rule 1: paint chips
+  while (picked.filter(w => w.pos === 'color').length < colorCount) {
+    const c = POOL.colors[randInt(POOL.colors.length)];
+    if (used.has(c.text)) continue;
+    used.add(c.text); picked.push(c);
+  }
+
+  // Rule 2: fill the rest, rejecting any word whose part of speech is full
+  const counts = { noun: 0, verb: 0, adj: 0, adv: 0 };
+  let guard = 0;
+  while (picked.length < total && guard++ < 100000) {
+    const w = POOL.words[randInt(POOL.words.length)];
+    if (used.has(w.text)) continue;
+    if (counts[w.pos] >= cap) continue;
+    used.add(w.text); counts[w.pos]++; picked.push(w);
+  }
+  return shuffle(picked);
+}
+
+function checkBalance(set) {
+  const total = set.length;
+  const colors = set.filter(w => w.pos === 'color').length;
+  const expectColors = total < 10 ? 1 : 2;
+  const cap = Math.floor(total / 2);
+  const over = POS.filter(p => set.filter(w => w.pos === p).length > cap);
+  const unique = new Set(set.map(w => w.text)).size === total;
+  return { ok: colors === expectColors && over.length === 0 && unique, colors, over, unique };
+}
+
+if (typeof window !== 'undefined') {
+  window.WordSalad = { POOL, generateWordSet, checkBalance, FAMILY_LABELS };
+}
+if (typeof module !== 'undefined') module.exports = { POOL, generateWordSet, checkBalance, FAMILY_LABELS };
+</script>
+
+<script>
+/* ---------- UI ---------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("ws-" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("ws-" + k, JSON.stringify(v)); } catch (e) {} }
+};
+
+const MIN = 5, MAX = 25;
+let count = 12;
+let current = [];
+function draw() {
+  current = WordSalad.generateWordSet(count);
+  render();
+}
+
+const tilesEl = document.getElementById("tiles");
+function render() {
+  tilesEl.innerHTML = "";
+  current.forEach((e, i) => {
+    const li = document.createElement("li");
+    li.className = "tile";
+    li.style.setProperty("--r", ((Math.random() * 5) - 2.5).toFixed(2) + "deg");
+    li.style.setProperty("--i", i);
+    if (e.hex) {
+      const sw = document.createElement("span");
+      sw.className = "swatch"; sw.style.background = e.hex; sw.setAttribute("aria-hidden", "true");
+      li.appendChild(sw);
+    }
+    li.appendChild(document.createTextNode(e.text));
+    tilesEl.appendChild(li);
+  });
+}
+
+/* ---------- Controls ---------- */
+const countEl = document.getElementById("count");
+const minus = document.getElementById("minus");
+const plus = document.getElementById("plus");
+function syncCount() { countEl.textContent = count; minus.disabled = count <= MIN; plus.disabled = count >= MAX; }
+minus.addEventListener("click", () => { if (count > MIN) { count--; syncCount(); draw(); } });
+plus.addEventListener("click", () => { if (count < MAX) { count++; syncCount(); draw(); } });
+const drawBtn = document.getElementById("draw");
+drawBtn.addEventListener("click", () => {
+  drawBtn.classList.remove("spin"); void drawBtn.offsetWidth; drawBtn.classList.add("spin");
+  draw();
+});
+
+const copyBtn = document.getElementById("copy");
+const copyLabel = document.getElementById("copyLabel");
+copyBtn.addEventListener("click", () => {
+  const text = current.map(e => e.text).join(", ");
+  const done = () => { copyLabel.textContent = "Copied"; setTimeout(() => (copyLabel.textContent = "Copy words"), 1600); };
+  const fallback = () => { const a = document.getElementById("copyArea"); a.value = text; a.select(); try { document.execCommand("copy"); done(); } catch (e) { copyLabel.textContent = "Copy by hand"; } };
+  try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+});
+
+/* ---------- Timer ---------- */
+const clockEl = document.getElementById("clock");
+const goBtn = document.getElementById("go");
+const lenEl = document.getElementById("lengths");
+let lengthMin = store.get("len", 5);
+if (![5, 7, 10].includes(lengthMin)) lengthMin = 5;
+let remaining = lengthMin * 60, running = false, endAt = 0, tick = null, audio = null;
+
+function fmt(s) { const m = Math.floor(s / 60), r = s % 60; return `${m}:${String(r).padStart(2, "0")}`; }
+function paint() { clockEl.textContent = fmt(Math.max(0, Math.ceil(remaining))); }
+
+[5, 7, 10].forEach(m => {
+  const c = document.createElement("button");
+  c.type = "button"; c.textContent = `${m} min`;
+  c.setAttribute("aria-pressed", m === lengthMin ? "true" : "false");
+  c.addEventListener("click", () => {
+    lengthMin = m; store.set("len", m);
+    lenEl.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === c ? "true" : "false"));
+    resetTimer();
+  });
+  lenEl.appendChild(c);
+});
+
+function chime() {
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.3, 0.6].forEach((t, i) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = "sine"; o.frequency.value = [880, 880, 1175][i];
+      g.gain.setValueAtTime(0.0001, audio.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.25, audio.currentTime + t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + t + 0.5);
+      o.connect(g).connect(audio.destination); o.start(audio.currentTime + t); o.stop(audio.currentTime + t + 0.55);
+    });
+  } catch (e) {}
+}
+function step() {
+  remaining = (endAt - Date.now()) / 1000;
+  if (remaining <= 0) {
+    remaining = 0; running = false; clearInterval(tick); paint();
+    clockEl.classList.add("done"); goBtn.textContent = "Start";
+    chime(); return;
+  }
+  paint();
+}
+goBtn.addEventListener("click", () => {
+  if (audio == null) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+  if (running) {
+    running = false; clearInterval(tick); remaining = (endAt - Date.now()) / 1000;
+    goBtn.textContent = "Resume";
+  } else {
+    if (remaining <= 0) resetTimer();
+    running = true; endAt = Date.now() + remaining * 1000; tick = setInterval(step, 250);
+    clockEl.classList.remove("done"); goBtn.textContent = "Pause";
+  }
+});
+function resetTimer() {
+  running = false; clearInterval(tick); remaining = lengthMin * 60;
+  clockEl.classList.remove("done"); goBtn.textContent = "Start"; paint();
+}
+document.getElementById("reset").addEventListener("click", resetTimer);
+
+/* ---------- Boot ---------- */
+syncCount();
+paint();
+draw();
+</script>
+
+</body>
+</html>
