@@ -1,7 +1,7 @@
 # wordsalad
 writing prompt tool
 
-Live site: https://jon-hanover.github.io/wordsalad/
+Live site: https://wordsalad.ink/
 
 Everything lives in `index.html` (the word bank, the rules for drawing a set, and the timer). Edit that file and push to `main`, and GitHub Pages republishes the site within a minute or two.
 
