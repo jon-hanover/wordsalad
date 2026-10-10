@@ -654,7 +654,7 @@ const goBtn = document.getElementById("go");
 const lenEl = document.getElementById("lengths");
 let lengthMin = store.get("len", 5);
 if (![5, 7, 10].includes(lengthMin)) lengthMin = 5;
-let remaining = lengthMin * 60, running = false, endAt = 0, tick = null, audio = null;
+let remaining = lengthMin * 60, running = false, endAt = 0, tick = null, audio = null, warned = false;
 
 function fmt(s) { const m = Math.floor(s / 60), r = s % 60; return `${m}:${String(r).padStart(2, "0")}`; }
 function paint() { clockEl.textContent = fmt(Math.max(0, Math.ceil(remaining))); }
@@ -671,17 +671,31 @@ function paint() { clockEl.textContent = fmt(Math.max(0, Math.ceil(remaining)));
   lenEl.appendChild(c);
 });
 
-function chime() {
+function bell(freq, at, peak, decay) {
+  // One soft bell strike: a sine plus two quieter overtones, fading out over `decay` seconds.
+  [[1, 1], [2, 0.3], [3, 0.12]].forEach(([mult, level]) => {
+    const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime + at;
+    o.type = "sine"; o.frequency.value = freq * mult;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak * level, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + decay / mult);
+    o.connect(g).connect(audio.destination); o.start(t); o.stop(t + decay / mult + 0.05);
+  });
+}
+function warnChime() {
+  // One minute left: a small, gentle two-note ding.
   try {
     audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.3, 0.6].forEach((t, i) => {
-      const o = audio.createOscillator(), g = audio.createGain();
-      o.type = "sine"; o.frequency.value = [880, 880, 1175][i];
-      g.gain.setValueAtTime(0.0001, audio.currentTime + t);
-      g.gain.exponentialRampToValueAtTime(0.25, audio.currentTime + t + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + t + 0.5);
-      o.connect(g).connect(audio.destination); o.start(audio.currentTime + t); o.stop(audio.currentTime + t + 0.55);
-    });
+    bell(1319, 0, 0.12, 1.2);
+    bell(1760, 0.18, 0.1, 1.4);
+  } catch (e) {}
+}
+function chime() {
+  // Time's up: a rising arpeggio that lands on a full chord and rings out.
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    [523, 659, 784, 1047].forEach((f, i) => bell(f, i * 0.16, 0.16, 1.6));
+    [523, 659, 784, 1047].forEach(f => bell(f, 0.8, 0.09, 3.5));
   } catch (e) {}
 }
 function step() {
@@ -691,10 +705,12 @@ function step() {
     clockEl.classList.add("done"); goBtn.textContent = "Start";
     chime(); return;
   }
+  if (!warned && remaining <= 60) { warned = true; warnChime(); }
   paint();
 }
 goBtn.addEventListener("click", () => {
   if (audio == null) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+  if (audio && audio.state === "suspended") audio.resume();
   if (running) {
     running = false; clearInterval(tick); remaining = (endAt - Date.now()) / 1000;
     goBtn.textContent = "Resume";
@@ -705,7 +721,7 @@ goBtn.addEventListener("click", () => {
   }
 });
 function resetTimer() {
-  running = false; clearInterval(tick); remaining = lengthMin * 60;
+  running = false; clearInterval(tick); remaining = lengthMin * 60; warned = false;
   clockEl.classList.remove("done"); goBtn.textContent = "Start"; paint();
 }
 document.getElementById("reset").addEventListener("click", resetTimer);
